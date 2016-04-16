@@ -1,6 +1,6 @@
 var express     = require('express'),
     nodeEnvFile = require('node-env-file'),
-    visa        = require('./utils/visa');
+    visa        = require('./utils/visa'),
     app         = express();
 
 // Load Environment Variables
