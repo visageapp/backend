@@ -52,4 +52,4 @@ Upon calling the Visa module, you get a `Promise` object giving you the results 
     body: <ObjectOrStringResultOfVisaApiCall>
 }
 ```
-The error callback of the promise returns an object with the same structure structure (if it is an HTTP non-200 response - otherwise, it's a generic error object):
+The error callback of the promise returns an object with the same structure (if it is an HTTP non-200 response - otherwise, it's a generic error object).
