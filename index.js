@@ -6,12 +6,9 @@ var express     = require('express'),
 // Load Environment Variables
 nodeEnvFile(__dirname + "/.env");
 
-
-
 visa('/', {}, (err, res, data) => {
     console.log(err, res, data);
 });
-
 
 // Exposed HTTP Port
 app.listen(process.env.PORT);
