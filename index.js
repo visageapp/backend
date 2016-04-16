@@ -1,7 +1,7 @@
 var express     = require('express'),
     bodyParser = require('body-parser'),
     nodeEnvFile = require('node-env-file'),
-    visa        = require('./utils/visa'),
+    visa        = require('./api/utils/visa'),
     facebook    = require('./utils/facebook'),
     messenger   = require('./utils/messenger'),
     app         = express();
@@ -16,11 +16,11 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods',
                   'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 
-                  'X-Requested-With, content-type, authorization, ' + 
+    res.setHeader('Access-Control-Allow-Headers',
+                  'X-Requested-With, content-type, authorization, ' +
                   'accept, origin');
 	res.setHeader('Access-Control-Allow-Credentials', 'true');
-		
+
 	if (req.method === "OPTIONS") {
         res.status(200).json({
             status: 200,
@@ -28,7 +28,7 @@ app.use((req, res, next) => {
             data: {}
         });
 	} else {
-		next();	
+		next();
 	}
 });
 
