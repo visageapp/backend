@@ -1,10 +1,10 @@
-var express     = require('express'),
+var express = require('express'),
     bodyParser = require('body-parser'),
     nodeEnvFile = require('node-env-file'),
-    visa        = require('./utils/visa'),
-    facebook    = require('./utils/facebook'),
-    messenger   = require('./utils/messenger'),
-    app         = express();
+    visa = require('./utils/visa'),
+    fbHookVerify = require('./api/controllers/fbHookVerify'),
+    fbHookMessage = require('./api/controllers/fbHookMessage'),
+    app = express();
 
 // Load Environment Variables
 nodeEnvFile(__dirname + "/.env");
@@ -33,8 +33,10 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.get("/api/v" + process.env.VERSION_NUMBER + "/fbHook", facebook);
-app.post("/api/v" + process.env.VERSION_NUMBER + "/fbHook", messenger);
+app.get("/api/v" + process.env.VERSION_NUMBER + "/fbHook", 
+        fbHookVerify);
+app.post("/api/v" + process.env.VERSION_NUMBER + "/fbHook", 
+         fbHookMessage);
 
 // Exposed HTTP Port
 app.listen(process.env.PORT, () => {
