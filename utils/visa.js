@@ -4,12 +4,11 @@ var request = require('request'),
 
 /**
 * Helper util for calling the Visa API.
-* @param {String} userid - User's Visa ID
-* @param {String} password - User's Visa Password
+* @param {Object} userDetails - {userid, password}
 * @param {Object|?} payload - Payload to send to Visa API
 * @returns {Promise} Resolve on success, Rejected otherwise
 */
-function visa(apiPath, {userid, password}, payload) {
+function visa(apiPath, userDetails, payload) {
     
     function promiseExecutor(resolve, reject) {
         fsPromise
@@ -26,6 +25,9 @@ function visa(apiPath, {userid, password}, payload) {
             })
             .then(({privateContents, certificateContents}) => {
                 function promiseExecutor(resolve, reject) {
+                    var userId = userDetails.userid,
+                        userPass = userDetails.password;
+                    
                     request.post({
                         url : `https://sandbox.api.visa.com/${apiPath}`,
                         key: privateContents,
@@ -34,7 +36,7 @@ function visa(apiPath, {userid, password}, payload) {
                             'Content-Type' : 'application/json',
                             'Accept' : 'application/json',
                             'Authorization' : 'Basic ' + 
-                                (new Buffer(`${userid}:${password}`))
+                                (new Buffer(`${userId}:${userPass}`))
                                 .toString('base64')
                         },
                         body: payload
