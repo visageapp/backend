@@ -1,19 +1,20 @@
 var express     = require('express'),
+    bodyParser = require('body-parser'),
     nodeEnvFile = require('node-env-file'),
-    visa        = require('./utils/visa'),
     app         = express();
 
 // Load Environment Variables
 nodeEnvFile(__dirname + "/.env");
 
+//Configure Express Server
+app.use(bodyParser.urlencoded({extended: false}))
 
-
-visa('/', {}, (err, res, data) => {
-    console.log(err, res, data);
-});
-
+//Setup Application Routes
+require('./api/routes')(app)
 
 // Exposed HTTP Port
-app.listen(process.env.PORT);
+app.listen(process.env.PORT, () => {
+    console.log(`Visage up on: http://localhost:${process.env.PORT}`)
+});
 
 module.exports = exports;
