@@ -1,0 +1,30 @@
+{
+  "name": "visage-backend",
+  "version": "1.0.0",
+  "description": "Backend JSON API for Visage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/visageapp/backend.git"
+  },
+  "keywords": [
+    "visage",
+    "visa",
+    "emerge"
+  ],
+  "author": "Alastair Paragas <alastairparagas@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/visageapp/backend/issues"
+  },
+  "homepage": "https://github.com/visageapp/backend#readme",
+  "dependencies": {
+    "express": "^4.13.4",
+    "node-env-file": "^0.1.8",
+    "request": "^2.71.0",
+    "sqlite3": "^3.1.3"
+  }
+}
