@@ -4,11 +4,11 @@ var request = require('request'),
 
 /**
 * Helper util for calling the Visa API.
-* @param {Object} userDetails - {userid, password}
 * @param {Object|?} payload - Payload to send to Visa API
+* @param {Object} userDetails - {userid, password}
 * @returns {Promise} Resolve on success, Rejected otherwise
 */
-function visa(apiPath, userDetails, payload) {
+function visa(apiPath, payload, userDetails) {
 
     return fsPromise
         .readFile(`${__dirname}/../../keys/visa_private.pem`)
@@ -24,10 +24,22 @@ function visa(apiPath, userDetails, payload) {
         })
         .then((contents) => {
             function promiseExecutor(resolve, reject) {
-                var userId = userDetails.userid,
-                    userPass = userDetails.password, 
+                var userId, userPass, 
                     privateContents = contents.privateContents,
                     certificateContents = contents.certificateContents;
+                
+                if (typeof payload === "object") {
+                    payload = JSON.stringify(payload);
+                }
+                
+                // No user details? Default to environment variables
+                if (!userDetails) {
+                    userId = process.env.VISA_USERID;
+                    userPass = process.env.VISA_PASSWORD;
+                } else {
+                    userId = userDetails.userid;
+                    userPass = userDetails.password;
+                }
 
                 request.post({
                     url : `https://sandbox.api.visa.com/${apiPath}`,
@@ -40,15 +52,29 @@ function visa(apiPath, userDetails, payload) {
                         (new Buffer(`${userId}:${userPass}`))
                         .toString('base64')
                     },
-                    body: JSON.stringify(payload)
+                    body: payload
                 }, (err, httpResponse, body) => {
-                    if (err) {
-                        reject(err);
+                    var bodyParsed;
+                    
+                    // Try parsing the response body as an object
+                    try {
+                        bodyParsed = JSON.parse(body);
+                    } catch (e) {
+                        bodyParsed = body;
                     }
-                    resolve({
-                        httpResponse,
-                        body
-                    });
+                    
+                    // If Promise error or HTTP error, reject
+                    if (err || httpResponse.statusCode !== 200) {
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
+                        
+                        reject({httpResponse, body: bodyParsed});
+                        return;
+                    }
+                    
+                    resolve({httpResponse, body: bodyParsed});
                 });
             }
             return new Promise(promiseExecutor);
