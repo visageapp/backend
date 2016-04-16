@@ -16,7 +16,3 @@ insert_final_newline = true
 [*.{css,scss,twig,md}]
 indent_style = tab
 indent_size = 4
-
-# 2 spaces indentation for JS
-[*.js]
-indent_size = 4
