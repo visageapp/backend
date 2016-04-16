@@ -11,10 +11,10 @@ var request = require('request'),
 function visa(apiPath, payload, userDetails) {
 
     return fsPromise
-        .readFile(`${__dirname}/../keys/visa_private.pem`)
+        .readFile(`${__dirname}/../../keys/visa_private.pem`)
         .then((privateContents) => {
         return fsPromise
-            .readFile(`${__dirname}/../keys/visa_certificate.pem`)
+            .readFile(`${__dirname}/../../keys/visa_certificate.pem`)
             .then((certificateContents) => {
                 return {
                     privateContents,
