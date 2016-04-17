@@ -74,7 +74,7 @@ function handleShowCards(sender, text) {
                     meta: {
                         name: resp.body.issuerName,
                     },
-                    img: `http://visage2.ngrok.io/${path}.png`,
+                    img: `http://10.24.194.64:8888/${acct._id}.png`,
                 }
             ];
             sendStructuredMessage(sender, entity);
