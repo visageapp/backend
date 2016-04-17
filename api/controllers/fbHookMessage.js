@@ -4,6 +4,11 @@ var aiResponse = require('../utils/aiResponse');
 var accounts = require('../utils/plaid');
 var visa = require('../utils/visa');
 
+var stepSession = {
+    currentFlow: null,
+    stepMeta: {}
+};
+
 function sendTextMessage(sender, text) {
     messageData = {
         text:text
@@ -34,8 +39,9 @@ function sendStructuredMessage(sender, entities) {
               "payload":{
                 "template_type":"generic",
                 "elements": entities.map((entity) => {
+                    console.log(entity);
                     return {
-                        title: entity.balance,
+                        title: entity.balance || 'N/A',
                         subtitle: entity.meta.name,
                         image_url: entity.img
                     }
@@ -59,22 +65,20 @@ function sendStructuredMessage(sender, entities) {
 }
 
 function handleShowCards(sender, text) {
-    visa('paai/generalattinq/v1/cardattributes/generalinquiry',
-        {'primaryAccountNumber': '4667596775551010'},
-        {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
-        password: "lMkAbcAMAbEFfNhkNO3ZM"})
-    .then(resp => {
+    visa.get().then(resp => {
         accounts.render(resp.body.cardProductName,
                         "Issued by: " +resp.body.issuerName,
                         Date.now(),
         function(path) {
+            console.log(resp.body);
+            console.log(sender);
             var entity = [
                 {
                     balance: resp.body.cardProductName,
                     meta: {
                         name: resp.body.issuerName,
                     },
-                    img: `http://10.24.194.64:8888/${acct._id}.png`,
+                    img: `http://192.168.110.1:8888/${sender}.png`,
                 }
             ];
             sendStructuredMessage(sender, entity);
@@ -86,9 +90,15 @@ function handleShowCards(sender, text) {
 
 function handleAccountReq(sender, text) {
     accounts.getBalance((err, balance) => {
-        console.log(err);
+        // console.log(err);
         console.log(balance);
         sendStructuredMessage(sender, balance);
+    });
+}
+
+function handleSetLimit(sender, text) {
+    visa.restrict(450).then((res) => {
+        sendTextMessage(sender, "Awesome! I've set your spending limit to $450" )
     });
 }
 
@@ -125,6 +135,9 @@ function fbHookMessage(req, res) {
                     else if(text.toLowerCase().indexOf("show") > -1 &&
                             text.toLowerCase().indexOf("cards") > -1) {
                         handleShowCards(sender, text);
+                    }
+                    else if(text.toLowerCase().indexOf("limit") > -1) {
+                        handleSetLimit(sender, text);
                     }
                     else if(text.toLowerCase().indexOf("create goal") > -1) {
                         sendTextMessage(sender, "What is your goal?")
