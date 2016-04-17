@@ -64,14 +64,11 @@ module.exports = {
           .filter(t => t.amount < 0))
     });
   },
-  risks(cb){
-    P.getRiskUser(token, cb)
-  },
   render(cb){
     webshot(`<html><body><h1>Total: 841.52</h1></body></html>`, 
-        './tmp/hello_world.png', 
+        `./tmp/hello_world.png`, 
         {siteType:'html'}, err => {
-            cb(`.tmp/hello_world.png`);
+            cb(err || `tmp/hello_world.png`);
         });
   }
 }

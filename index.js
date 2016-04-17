@@ -10,6 +10,7 @@ var express = require('express'),
 nodeEnvFile(__dirname + "/.env");
 
 //Configure Express Server
+app.use(express.static(`${__dirname}/tmp`));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use((req, res, next) => {

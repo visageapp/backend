@@ -38,13 +38,12 @@ module.exports = {
         plaid.risks((err, data) => {
             res.json(err || data);
         });
-    }
+    },
     test(req, res){
         plaid.render(img => {
             res.json({img});
         });
     }
-
 
     //set cap
     //get notifications
