@@ -53,3 +53,18 @@ Upon calling the Visa module, you get a `Promise` object giving you the results 
 }
 ```
 The error callback of the promise returns an object with the same structure (if it is an HTTP non-200 response - otherwise, it's a generic error object).
+
+
+
+## Querying Data from User account
+
+endpoints:
+	[/connect, /validate, /balance, /income, /staus]
+
+```javascript
+app.post('/connect', c.BankController.connect_bank);
+app.post('/validate', c.BankController.validate);
+app.get('/balance', c.BankController.balance);
+app.get('/income', c.BankController.income);
+app.get('/status', c.BankController.status);
+```javascript
