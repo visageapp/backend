@@ -39,7 +39,9 @@ module.exports = {
   getBalance(cb){
     P.getBalance(token, (err, data) => {
       var balance = data.accounts.map(acct => {
+        render(`$${acct.balance.available}`, `${acct.meta.name}`, acct._id);
           return {
+            img: `http://10.24.194.64:8888/${acct._id}.png`,
             bank: acct.institution_type,
             meta: acct.meta,
             balance: acct.balance.available
@@ -64,11 +66,69 @@ module.exports = {
           .filter(t => t.amount < 0))
     });
   },
-  render(cb){
-    webshot(`<html><body><h1>Total: 841.52</h1></body></html>`, 
-        `./tmp/hello_world.png`, 
-        {siteType:'html'}, err => {
-            cb(err || `tmp/hello_world.png`);
+  render
+}
+
+function render(top, sub, id, cb){
+    var t = Date.now();
+    return webshot(`
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <script src="https://use.typekit.net/pge2pdn.js"></script>
+                <script>try{Typekit.load({ async: true });}catch(e){}</script>
+                <style>
+                    html, body {
+                        margin: 0;
+                        padding: 0;
+                        width: 100vw;
+                        height: 100vh;
+                        overflow: hidden;
+                        text-align: center;
+                        align-items: center;
+                        flex-direction: column;
+                        justify-content: center;
+                        background: #2980b9; //#34495e;
+                    }
+
+                    .top{
+                        margin-top: 15%;
+                        font-size: 9em;
+                        text-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+                    }
+                        
+                    h1, h2, h3, h4, h5, h6, p {
+                        font-family: "brandon-grotesque",sans-serif;
+                        font-weight: 100;
+                        color:  #f5f5f5;//#29AAE2 //#444;
+                        z-index: -2;
+                        display: flex;
+                        align-items: center;
+                        flex-direction: column;
+                        justify-content: center;
+                    }
+                </style>
+                <title>Visage</title>
+            </head>
+            <body>
+                <h1 class="top">${top || 'Visage'}</h1>
+                <h3>${sub || 'The Intelligent Finance Messenger'}</h3>
+            </body>
+        </html>
+    `, 
+        `./public/imgs/${id || t}.png`,
+        {
+            siteType:'html',
+            screenSize: 
+                {width: 916, 
+                height: 480}, 
+            shotSize: 
+                {width: 916, 
+                height: 480}, 
+            userAgent: 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.20 (KHTML, like Gecko) Mobile/7B298g'
+        }, err => {
+           cb && cb(err || `./public/imgs/${id || t}.png`);
         });
   }
-}

@@ -40,7 +40,7 @@ module.exports = {
         });
     },
     test(req, res){
-        plaid.render(img => {
+        plaid.render(null, null, 'test', img => {
             res.json({img});
         });
     }
