@@ -110,7 +110,7 @@ function aiResponse(userId, message) {
                 sessionStorage[userId] = newContext;
                 resolve(botMessage);
             }
-        }, 1);
+        });
     });
 }
 
