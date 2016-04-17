@@ -4,6 +4,7 @@ var express = require('express'),
     fbHookVerify = require('./api/controllers/fbHookVerify'),
     fbHookMessage = require('./api/controllers/fbHookMessage'),
     User = require('./api/models/User');
+    Goal = require('./api/models/Goal');
     app = express();
 
 // Load Environment Variables
@@ -35,7 +36,7 @@ app.use((req, res, next) => {
 app.use(express.static(__dirname + './static'));
 
 app.get("/api/v" + process.env.VERSION_NUMBER + "/startDb", (req, res) => {
-    User.seed();
+    Goal.seed();
     res.json({msg: "Done son"})
 });
 
