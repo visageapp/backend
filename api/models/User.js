@@ -4,6 +4,16 @@ var sqlite3 = require('sqlite3').verbose(),
 
 
 module.exports = {
+    create(values) {
+        return new Promise((fulfill, reject) => {
+            db.run(`INSERT into users (messenger_id) VALUES ($messenger_id)`, {
+                $messenger_id: values.messenger_id
+            }, function(err) {
+                if(err) reject(err);
+                else fulfill(this.lastID);
+            });
+        });
+    },
     find(id) {
         return new Promise((fulfill, reject) => {
             db.run(`SELECT * FROM users where id = $id`, {
