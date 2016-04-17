@@ -1,5 +1,6 @@
 var visa    = require('../utils/visa'),
-    plaid   = require('../utils/plaid');
+    plaid   = require('../utils/plaid'),
+    card    = '5712664de4b0fe37deb360c2';
 
 module.exports = {
     connect_card(req, res){
@@ -7,8 +8,28 @@ module.exports = {
             {'primaryAccountNumber': '4667596775551010'},
             {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"})
-        .then(function (stuff) { console.log(stuff); res.json(stuff); },
-            function (error) { console.log(error); });
+        .then(resp => res.json(resp.body), err => res.json(err));
+    },
+    get_card(req, res){
+        visa('paai/generalattinq/v1/cardattributes/generalinquiry',
+            {'primaryAccountNumber': '4667596775551010'},
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+        .then(resp => res.json(resp.body), err => res.json(err));
+    },
+    secure_card(req, res){
+        visa('',
+            {'primaryAccountNumber': '4667596775551010'},
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+        .then(resp => res.json(resp.body), err => res.json(err));
+    },
+    restrict_card(req, res){
+        visa('',
+            {'primaryAccountNumber': '4667596775551010'},
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+        .then(resp => res.json(resp.body), err => res.json(err));
     },
     connect_bank(req, res){
         plaid.createUser(null, null, req.body || req.parmas, (err, data) => {
@@ -40,9 +61,11 @@ module.exports = {
         });
     },
     test(req, res){
-        plaid.render(null, null, 'test', img => {
-            res.json({img});
-        });
+        visa('paai/generalattinq/v1/cardattributes/generalinquiry',
+            {'primaryAccountNumber': '4667596775551010'},
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+        .then(resp => res.json(resp.body), err => res.json(err));
     }
 
     //set cap
