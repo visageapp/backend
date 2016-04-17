@@ -1,4 +1,5 @@
 var request = require('request'),
+    m       = require('moment'), 
     webshot = require('webshot'),
     plaid   = require('plaid'),
     chase   = "5301a99504977c52b60000d0", //chase bank instution code
@@ -64,6 +65,33 @@ module.exports = {
             }
           })
           .filter(t => t.amount < 0))
+    });
+  },
+  stats(cb){
+    P.getConnectUser(token, (err, data) => {
+        var recent = data.transactions
+                        .filter(t => m(t.date).isSameOrAfter('2016-3-1', 'month'));
+
+        cb(err, {
+            earned: recent.filter(t => t.amount < 0)
+                    .map(t => t.amount)
+                    .reduce((p, n) => p + n),
+            spent: recent.filter(t => t.amount > 0)
+                    .map(t => t.amount)
+                    .reduce((p, n) => p + n),
+            burn: recent
+                    .filter(t => t.amount > 0)
+                    .sort((a, b) => {
+                        if (a.amount > b.amount) {
+                            return 1;
+                          }
+                          if (a.amount < b.amount) {
+                            return -1;
+                          }
+                          return 0;
+                    }).pop()
+
+        });
     });
   },
   render
