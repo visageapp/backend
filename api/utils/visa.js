@@ -88,7 +88,8 @@ function visa(apiPath, payload, requestMethod, userDetails) {
         });
 }
 
-var playload = {
+var card = '5712664de4b0fe37deb360c2',
+    data = {
     "globalControl": {
         "alertThreshold": 150, //value
         "declineThreshold": 150, //value
@@ -132,16 +133,16 @@ module.exports = exports = {
             password: "lMkAbcAMAbEFfNhkNO3ZM"})
     },
     restrict(value){
-        payload.globalControl.alertThreshold = value;
-        payload.globalControl.declineThreshold = value;
-        payload.transactionControls.alertThreshold = value;
-        payload.transactionControls.declineThreshold = value;
+        data.globalControl.alertThreshold = value;
+        data.globalControl.declineThreshold = value;
+        data.transactionControls.alertThreshold = value;
+        data.transactionControls.declineThreshold = value;
 
         // modify payload
         // payload
 
         return visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
-            payload,
+            data,
             'put',
             {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"})
