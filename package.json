@@ -26,6 +26,7 @@
     "express": "^4.13.4",
     "fb": "^1.0.2",
     "fs-promise": "^0.5.0",
+    "lodash": "^4.11.1",
     "node-env-file": "^0.1.8",
     "node-wit": "^3.2.0",
     "request": "^2.71.0",
