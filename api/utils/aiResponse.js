@@ -25,7 +25,6 @@ function _createContextFromEntities(sessionId, context,
                                 'intent.0.value', 
                                 lodash.get(context, 
                                            'intent', null));
-        
         // Based on the intent, parse the context object
         // Story: createGoal
         if (intent === "createGoal") {
@@ -53,7 +52,7 @@ function _createContextFromEntities(sessionId, context,
         else if (intent === "showMyCards") {
             newContext.reply = "show_cards";
         }
-        else if ("limit") {
+        else if (intent === "limit") {
             if (lodash.has(entities, 'amount_of_money')) {
                 newContext.limitAmount = 
                     lodash.get(entities, 'amount_of_money.0.value');
