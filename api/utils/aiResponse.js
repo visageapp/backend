@@ -10,61 +10,61 @@ var Wit = require('node-wit').Wit,
     sessionStorage = {};
 
 function _createContextFromEntities(sessionId, context, 
-                                    entities, message) {
+                                     entities, message) {
     return new Promise((resolve, reject) => {
         var pastContext = context, 
             newContext = {}, 
             mergedContext;
-        
+
         // If this is the start of a user story, clear context!
         if (lodash.get(entities, 'intent.0.value', false)) {
             pastContext = {};
         }
+
+        var intent = lodash.get(entities, 
+                                'intent.0.value', 
+                                lodash.get(context, 
+                                           'intent', null));
         
         // Based on the intent, parse the context object
-        switch (lodash.get(entities, 
-                           'intent.0.value', 
-                           lodash.get(context, 
-                                      'intent', null))) {
-            // Story: createGoal
-            case "createGoal":
-                // Initialized Story
-                if (lodash.isEmpty(pastContext)) {
-                    newContext.intent = "createGoal";
-                }
-                // User responded by giving a new goal name
-                else if (!lodash.has(pastContext, 'goalLabel')) {
-                    newContext.goalLabel = message;
-                }
-                // User responded with a price
-                else if (lodash.has(entities, 'number')) {
-                    newContext.goalCost = lodash.get(entities, 
-                                                     'number.0.value');
-                }
-                // User responded with a goal url
-                else if (lodash.has(entities, 'url')) {
-                    newContext.goalUrl = entities.url;
-                }
-                break;
-            case "accountInformation":
-                newContext.reply = "account";
-                break;
-            case "showMyCards":
-                newContext.reply = "show_cards";
-                break;
-            case "limit":
-                if (lodash.has(entities, 'amount_of_money')) {
-                    newContext.limitAmount = 
-                        lodash.get(entities, 'amount_of_money.0.value');
-                }
-                break;
-            case "greeting":
-                newContext.reply = 
-                    "Welcome to Visage, your personal AI financial " + 
-                    "assistant!";
-                break;
+        // Story: createGoal
+        if (intent === "createGoal") {
+            // Initialized Story
+            if (lodash.isEmpty(pastContext)) {
+                newContext.intent = "createGoal";
+            }
+            // User responded by giving a new goal name
+            else if (!lodash.has(pastContext, 'goalLabel')) {
+                newContext.goalLabel = message;
+            }
+            // User responded with a price
+            else if (lodash.has(entities, 'number')) {
+                newContext.goalCost = lodash.get(entities, 
+                                                 'number.0.value');
+            }
+            // User responded with a goal url
+            else if (lodash.has(entities, 'url')) {
+                newContext.goalUrl = entities.url;
+            }
         }
-        
+        else if (intent === "accountInformation") {
+            newContext.reply = "account";
+        }
+        else if (intent === "showMyCards") {
+            newContext.reply = "show_cards";
+        }
+        else if ("limit") {
+            if (lodash.has(entities, 'amount_of_money')) {
+                newContext.limitAmount = 
+                    lodash.get(entities, 'amount_of_money.0.value');
+            }
+        }
+        else if (intent === "greeting") {
+            newContext.reply = 
+                "Welcome to Visage, your personal AI financial " + 
+                "assistant!";
+        }
+
         // Merge contexts and store that new merged context!
         mergedContext = lodash.assign({}, pastContext, newContext);
         resolve(mergedContext);
@@ -73,11 +73,11 @@ function _createContextFromEntities(sessionId, context,
 
 
 function aiResponse(userId, message) {  
-    
+
     return new Promise((resolve, reject) => {
-        
+
         var botMessage, 
-            
+
             pastContext = lodash.get(sessionStorage, userId, {}), 
             witAi = new Wit(process.env.WITAI_SERVER_TOKEN, {
                 say: (sessionId, context, message, cb) => {
@@ -96,7 +96,7 @@ function aiResponse(userId, message) {
                     reject(err);
                 }
             });
-        
+
         witAi.runActions(userId, 
                          message, 
                          pastContext, 
@@ -113,3 +113,8 @@ function aiResponse(userId, message) {
 }
 
 module.exports = exports = aiResponse;
+
+(require('node-env-file'))(__dirname + "/../../.env");		
+aiResponse(12, "hi!").then(function (aiMessage) { 		
+    console.log(aiMessage);	
+});
