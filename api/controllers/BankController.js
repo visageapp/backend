@@ -45,7 +45,6 @@ module.exports = {
         });
     }
 
-
     //set cap
     //get notifications
 }
