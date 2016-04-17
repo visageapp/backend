@@ -4,8 +4,10 @@ var request = require('request'),
 
 /**
 * Helper util for calling the Visa API.
+* @param {String} apiPath - Path to API visa
 * @param {Object|?} payload - Payload to send to Visa API
-* @param {Object} userDetails - {userid, password}
+* @param {String} requestMethod - request method in lower-case string
+* @param {Object|Optional} userDetails - {userid, password}
 * @returns {Promise} Resolve on success, Rejected otherwise
 */
 function visa(apiPath, payload, requestMethod, userDetails) {
