@@ -1,7 +1,7 @@
 var UserController = require('./UserController'),
-    VisaController = require('./VisaController');
+    BankController = require('./BankController');
 
 module.exports = {
     UserController,
-    VisaController
+    BankController
 }
