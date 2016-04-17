@@ -25,6 +25,7 @@ function _createContextFromEntities(sessionId, context,
                                 'intent.0.value', 
                                 lodash.get(context, 
                                            'intent', null));
+        console.log(intent);
         // Based on the intent, parse the context object
         // Story: createGoal
         if (intent === "createGoal") {
@@ -66,6 +67,7 @@ function _createContextFromEntities(sessionId, context,
 
         // Merge contexts and store that new merged context!
         mergedContext = lodash.assign({}, pastContext, newContext);
+        console.log(JSON.stringify(mergedContext));
         resolve(mergedContext);
     });
 }
@@ -80,6 +82,7 @@ function aiResponse(userId, message) {
             pastContext = lodash.get(sessionStorage, userId, {}), 
             witAi = new Wit(process.env.WITAI_SERVER_TOKEN, {
                 say: (sessionId, context, message, cb) => {
+                    console.log(message);
                     botMessage = message;
                     cb();
                 },
@@ -107,13 +110,8 @@ function aiResponse(userId, message) {
                 sessionStorage[userId] = newContext;
                 resolve(botMessage);
             }
-        });
+        }, 1);
     });
 }
 
 module.exports = exports = aiResponse;
-
-(require('node-env-file'))(__dirname + "/../../.env");		
-aiResponse(12, "hi!").then(function (aiMessage) { 		
-    console.log(aiMessage);	
-});
