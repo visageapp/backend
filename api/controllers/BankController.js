@@ -21,12 +21,12 @@ module.exports = {
             req.body.key || req.query.key, 
             null,
             (err, data) => {
-              res.json(data);
+              res.json( err || data);
             });
     },
     balance(req, res){
         plaid.getBalance((err, data) => {
-            res.json(err, data);
+            res.json(err || data);
         });
     },
     income(req, res){
@@ -37,6 +37,11 @@ module.exports = {
     status(req, res){
         plaid.risks((err, data) => {
             res.json(err || data);
+        });
+    }
+    test(req, res){
+        plaid.render(img => {
+            res.json({img});
         });
     }
 

@@ -1,7 +1,6 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
     nodeEnvFile = require('node-env-file'),
-    visa = require('./utils/visa'),
     fbHookVerify = require('./api/controllers/fbHookVerify'),
     fbHookMessage = require('./api/controllers/fbHookMessage'),
     app = express();
@@ -37,6 +36,8 @@ app.get("/api/v" + process.env.VERSION_NUMBER + "/fbHook",
         fbHookVerify);
 app.post("/api/v" + process.env.VERSION_NUMBER + "/fbHook", 
          fbHookMessage);
+
+require('./api/routes')(app);
 
 // Exposed HTTP Port
 app.listen(process.env.PORT, () => {
