@@ -46,6 +46,23 @@ function _createContextFromEntities(sessionId, context,
                     newContext.goalUrl = entities.url;
                 }
                 break;
+            case "accountInformation":
+                newContext.reply = "account";
+                break;
+            case "showMyCards":
+                newContext.reply = "show_cards";
+                break;
+            case "limit":
+                if (lodash.has(entities, 'amount_of_money')) {
+                    newContext.limitAmount = 
+                        lodash.get(entities, 'amount_of_money.0.value');
+                }
+                break;
+            case "greeting":
+                newContext.reply = 
+                    "Welcome to Visage, your personal AI financial " + 
+                    "assistant!";
+                break;
         }
         
         // Merge contexts and store that new merged context!
