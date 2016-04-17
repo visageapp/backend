@@ -90,8 +90,8 @@ function visa(apiPath, payload, requestMethod, userDetails) {
 
 var playload = {
     "globalControl": {
-        "alertThreshold": 500, //value
-        "declineThreshold": 600, //value
+        "alertThreshold": 150, //value
+        "declineThreshold": 150, //value
         "isControlEnabled": true,
         "shouldAlertOnDecline": true,
         "shouldDeclineAll": true,
@@ -102,7 +102,7 @@ var playload = {
         {
           "alertThreshold": 150, //value
           "controlType": "TCT_AUTO_PAY",
-          "declineThreshold": 400, //value
+          "declineThreshold": 150, //value
           "isControlEnabled": true,
           "shouldAlertOnDecline": true,
           "shouldDeclineAll": true,
@@ -131,7 +131,12 @@ module.exports = exports = {
             {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"})
     },
-    restrict(){
+    restrict(value){
+        payload.globalControl.alertThreshold = value;
+        payload.globalControl.declineThreshold = value;
+        payload.transactionControls.alertThreshold = value;
+        payload.transactionControls.declineThreshold = value;
+
         // modify payload
         // payload
 
