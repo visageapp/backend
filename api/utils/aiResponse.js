@@ -57,6 +57,8 @@ function _createContextFromEntities(sessionId, context,
             if (lodash.has(entities, 'amount_of_money')) {
                 newContext.limitAmount = 
                     lodash.get(entities, 'amount_of_money.0.value');
+                newContext.limitAmount = 
+                    "_limitAmount_" + newContext.limitAmount;
             }
         }
         if (intent === "greeting") {
@@ -67,7 +69,6 @@ function _createContextFromEntities(sessionId, context,
 
         // Merge contexts and store that new merged context!
         mergedContext = lodash.assign({}, pastContext, newContext);
-        console.log(JSON.stringify(mergedContext));
         resolve(mergedContext);
     });
 }
