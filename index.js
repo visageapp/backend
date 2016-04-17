@@ -1,29 +1,46 @@
-var express     = require('express'),
+var express = require('express'),
     bodyParser = require('body-parser'),
     nodeEnvFile = require('node-env-file'),
-    app         = express();
+    visa = require('./utils/visa'),
+    fbHookVerify = require('./api/controllers/fbHookVerify'),
+    fbHookMessage = require('./api/controllers/fbHookMessage'),
+    app = express();
 
 // Load Environment Variables
 nodeEnvFile(__dirname + "/.env");
 
 //Configure Express Server
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
-    next();
-});
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods',
+                  'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers',
+                  'X-Requested-With, content-type, authorization, ' +
+                  'accept, origin');
+	res.setHeader('Access-Control-Allow-Credentials', 'true');
 
-//Setup Application Routes
-require('./api/routes')(app)
+	if (req.method === "OPTIONS") {
+        res.status(200).json({
+            status: 200,
+            message: "ok",
+            data: {}
+        });
+	} else {
+		next();
+	}
+});
+
+// Routes
+app.get("/api/v" + process.env.VERSION_NUMBER + "/fbHook", 
+        fbHookVerify);
+app.post("/api/v" + process.env.VERSION_NUMBER + "/fbHook", 
+         fbHookMessage);
 
 // Exposed HTTP Port
 app.listen(process.env.PORT, () => {
-    console.log(`Visage listening on port ${process.env.PORT}`)
+    console.log(`Visage listening on port ${process.env.PORT}`);
 });
 
 module.exports = exports;
