@@ -86,9 +86,10 @@ function aiResponse(userId, message) {
                          (error, newContext) => {
             if (error) {
                 console.log("Wit Error: " + error);
+                reject(error);
             } else {
                 sessionStorage[userId] = newContext;
-                resolve();
+                resolve(botMessage);
             }
         });
     });
