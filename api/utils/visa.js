@@ -8,7 +8,7 @@ var request = require('request'),
 * @param {Object} userDetails - {userid, password}
 * @returns {Promise} Resolve on success, Rejected otherwise
 */
-function visa(apiPath, payload, userDetails) {
+function visa(apiPath, payload, requestMethod, userDetails) {
 
     return fsPromise
         .readFile(`${__dirname}/../../keys/visa_private.pem`)
@@ -24,7 +24,7 @@ function visa(apiPath, payload, userDetails) {
         })
         .then((contents) => {
             function promiseExecutor(resolve, reject) {
-                var userId, userPass, 
+                var userId, userPass, requestObj, 
                     privateContents = contents.privateContents,
                     certificateContents = contents.certificateContents;
                 
@@ -40,8 +40,13 @@ function visa(apiPath, payload, userDetails) {
                     userId = userDetails.userid;
                     userPass = userDetails.password;
                 }
-
-                request.post({
+                
+                if (requestMethod) {
+                    requestObj = request[requestMethod];
+                } else {
+                    requestObj = request.post;
+                }
+                requestObj({
                     url : `https://sandbox.api.visa.com/${apiPath}`,
                     key: privateContents,
                     cert: certificateContents,
