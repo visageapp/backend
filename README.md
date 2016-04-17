@@ -30,13 +30,14 @@ All API endpoints are prefixed with `/api/<versionNumber>`. All consumer-facing 
     * *Payload*: JSON:{fbAccessToken, visaPan}
     * *Response*: EMPTY_OBJ
     
-## Calling Visa's API Endpoints
-An abstraction over Visa's API endpoints can be found at `/utils/visa.js`. This module exposes a function that accepts an API endpoint, a request payload and an object with a developer's `userid` and `password` credentials (this third parameter - an object - is optional).
+## Visa Abstraction Module
+An abstraction over Visa's API endpoints can be found at `/api/utils/visa.js`. This module exposes a function that accepts an API endpoint, a request payload and an object with a developer's `userid` and `password` credentials (this third parameter - an object - is optional).
 
 ```javascript
+// Load environment variables
 (require('node-env-file'))(__dirname + "/.env");
-var visa = require('./utils/visa');
 
+var visa = require('./api/utils/visa');
 visa('vctc/customerrules/v1/consumertransactioncontrols', 
     {'primaryAccountNumber': '4667596775551010'},
     {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ", 
@@ -54,17 +55,25 @@ Upon calling the Visa module, you get a `Promise` object giving you the results 
 ```
 The error callback of the promise returns an object with the same structure (if it is an HTTP non-200 response - otherwise, it's a generic error object).
 
+## WitAi Abstraction Module
+An abstraction over WitAi can be found at `/api/utils/aiResponse.js`. This module exposes a function that accepts an identifying session id and the user's message. Upon calling the Visa module, you get a `Promise` object giving you the response of the AI.
+```javascript
+// Load environment variables
+(require('node-env-file'))(__dirname + "/.env");
+
+var aiResponse = require('./api/utils/aiResponse');
+aiResponse(1, "Create a goal for me!")
+.then(function (aiMessage) { console.log(aiMessage); }, 
+    function (error) { console.log(error); });
+```
 
 
 ## Querying Data from User account
 
 endpoints:
-	[/connect, /validate, /balance, /income, /staus]
+	POST /connect 
+	POST /validate 
+	GET /balance, 
+	GET /income, 
+	GET /status
 
-```javascript
-app.post('/connect', c.BankController.connect_bank);
-app.post('/validate', c.BankController.validate);
-app.get('/balance', c.BankController.balance);
-app.get('/income', c.BankController.income);
-app.get('/status', c.BankController.status);
-```javascript
