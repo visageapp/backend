@@ -114,21 +114,25 @@ var card = '5712664de4b0fe37deb360c2',
 };
 
 module.exports = exports = {
+    call: visa,
     connect(){
         return visa('vctc/customerrules/v1/consumertransactioncontrols',
             {'primaryAccountNumber': '4667596775551010'},
+            null,
             {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"});
     },
     get(card){
         return visa('paai/generalattinq/v1/cardattributes/generalinquiry',
             {'primaryAccountNumber': '4667596775551010'},
+            null,
             {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"});
     },
     secure(){
         return visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
             payload,
+            null,
             {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"})
     },
