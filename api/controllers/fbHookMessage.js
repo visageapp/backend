@@ -2,6 +2,7 @@ var request = require('request');
 var User = require('../models/User')
 var aiResponse = require('../utils/aiResponse');
 var accounts = require('../utils/plaid');
+var visa = require('../utils/visa');
 
 function sendTextMessage(sender, text) {
     messageData = {
@@ -34,9 +35,9 @@ function sendStructuredMessage(sender, entities) {
                 "template_type":"generic",
                 "elements": entities.map((entity) => {
                     return {
-                        title: '$'+entity.balance,
+                        title: entity.balance,
                         subtitle: entity.meta.name,
-                        image_url: 'http://unsplash.it/916/480'
+                        image_url: entity.img
                     }
                 })
               }
@@ -55,6 +56,32 @@ function sendStructuredMessage(sender, entities) {
             console.log('Error: ', response.body.error);
         }
     });
+}
+
+function handleShowCards(sender, text) {
+    visa('paai/generalattinq/v1/cardattributes/generalinquiry',
+        {'primaryAccountNumber': '4667596775551010'},
+        {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+        password: "lMkAbcAMAbEFfNhkNO3ZM"})
+    .then(resp => {
+        accounts.render(resp.body.cardProductName,
+                        "Issued by: " +resp.body.issuerName,
+                        Date.now(),
+        function(path) {
+            var entity = [
+                {
+                    balance: resp.body.cardProductName,
+                    meta: {
+                        name: resp.body.issuerName,
+                    },
+                    img: `http://visage2.ngrok.io/${path}.png`,
+                }
+            ];
+            sendStructuredMessage(sender, entity);
+        });
+
+        res.sendStatus(200);
+    }, err => res.json(err));
 }
 
 function handleAccountReq(sender, text) {
@@ -80,8 +107,10 @@ function fbHookMessage(req, res) {
     for (var i = 0; i < messaging_events.length; i++) {
         var event = req.body.entry[0].messaging[i];
         var sender = event.sender.id;
-        if(event.optin) {
+        console.log(sender);
+        if(event.optin || sender == '855686287892510') {
             var userId = event.sender.id;
+            User.create({messenger_id: userId}).then(id => console.log(id));
         }
         if (event.message && event.message.text) {
             User.findByMessenger(sender)
@@ -93,7 +122,11 @@ function fbHookMessage(req, res) {
                     if(text.toLowerCase().indexOf("account") > -1) {
                         handleAccountReq(sender, text);
                     }
-                    if(text.toLowerCase().indexOf("create goal") > -1) {
+                    else if(text.toLowerCase().indexOf("show") > -1 &&
+                            text.toLowerCase().indexOf("cards") > -1) {
+                        handleShowCards(sender, text);
+                    }
+                    else if(text.toLowerCase().indexOf("create goal") > -1) {
                         sendTextMessage(sender, "What is your goal?")
                         // handleCreateGoal()
                     }
