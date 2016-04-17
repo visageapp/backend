@@ -86,4 +86,57 @@ function visa(apiPath, payload, requestMethod, userDetails) {
         });
 }
 
-module.exports = exports = visa;
+var playload = {
+    "globalControl": {
+        "alertThreshold": 500, //value
+        "declineThreshold": 600, //value
+        "isControlEnabled": true,
+        "shouldAlertOnDecline": true,
+        "shouldDeclineAll": true,
+        "shouldTargetSpecificCard": true,
+        "userIdentifier": "string"
+      },
+      "transactionControls": [
+        {
+          "alertThreshold": 150, //value
+          "controlType": "TCT_AUTO_PAY",
+          "declineThreshold": 400, //value
+          "isControlEnabled": true,
+          "shouldAlertOnDecline": true,
+          "shouldDeclineAll": true,
+          "shouldTargetSpecificCard": true,
+          "userIdentifier": "string"
+        }
+      ]
+};
+
+module.exports = exports = {
+    connect(){
+        return visa('vctc/customerrules/v1/consumertransactioncontrols',
+            {'primaryAccountNumber': '4667596775551010'},
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"});
+    },
+    get(card){
+        return visa('paai/generalattinq/v1/cardattributes/generalinquiry',
+            {'primaryAccountNumber': '4667596775551010'},
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"});
+    },
+    secure(){
+        return visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
+            payload,
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+    },
+    restrict(){
+        // modify payload
+        // payload
+
+        return visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
+            payload,
+            'put',
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+    }
+};
