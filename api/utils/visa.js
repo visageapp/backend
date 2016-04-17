@@ -88,4 +88,67 @@ function visa(apiPath, payload, requestMethod, userDetails) {
         });
 }
 
-module.exports = exports = visa;
+var card = '5712664de4b0fe37deb360c2',
+    data = {
+    "globalControl": {
+        "alertThreshold": 150, //value
+        "declineThreshold": 150, //value
+        "isControlEnabled": true,
+        "shouldAlertOnDecline": true,
+        "shouldDeclineAll": true,
+        "shouldTargetSpecificCard": true,
+        "userIdentifier": "string"
+      },
+      "transactionControls": [
+        {
+          "alertThreshold": 150, //value
+          "controlType": "TCT_AUTO_PAY",
+          "declineThreshold": 150, //value
+          "isControlEnabled": true,
+          "shouldAlertOnDecline": true,
+          "shouldDeclineAll": true,
+          "shouldTargetSpecificCard": true,
+          "userIdentifier": "string"
+        }
+      ]
+};
+
+module.exports = exports = {
+    call: visa,
+    connect(){
+        return visa('vctc/customerrules/v1/consumertransactioncontrols',
+            {'primaryAccountNumber': '4667596775551010'},
+            null,
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"});
+    },
+    get(card){
+        return visa('paai/generalattinq/v1/cardattributes/generalinquiry',
+            {'primaryAccountNumber': '4667596775551010'},
+            null,
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"});
+    },
+    secure(){
+        return visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
+            payload,
+            null,
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+    },
+    restrict(value){
+        data.globalControl.alertThreshold = value;
+        data.globalControl.declineThreshold = value;
+        data.transactionControls.alertThreshold = value;
+        data.transactionControls.declineThreshold = value;
+
+        // modify payload
+        // payload
+
+        return visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
+            data,
+            'put',
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+    }
+};
