@@ -17,7 +17,7 @@ function _createContextFromEntities(sessionId, context,
             mergedContext;
         
         // If this is the start of a user story, clear context!
-        if (lodash.get(entities, 'intent.0.value', null)) {
+        if (lodash.get(entities, 'intent.0.value', false)) {
             pastContext = {};
         }
         
@@ -26,65 +26,60 @@ function _createContextFromEntities(sessionId, context,
                            'intent.0.value', 
                            lodash.get(context, 
                                       'intent', null))) {
-                // Story: createGoal
+            // Story: createGoal
             case "createGoal":
                 // Initialized Story
                 if (lodash.isEmpty(pastContext)) {
                     newContext.intent = "createGoal";
                 }
                 // User responded by giving a new goal name
-                else if (!lodash.has(pastContext, 'heading')) {
-                    newContext.heading = message;
+                else if (!lodash.has(pastContext, 'goalLabel')) {
+                    newContext.goalLabel = message;
                 }
                 // User responded with a price
-                else if (lodash.has(entities, 'amount_of_money')) {
-                    newContext.price = entities.amount_of_money;
+                else if (lodash.has(entities, 'number')) {
+                    newContext.goalCost = lodash.get(entities, 
+                                                     'number.0.value');
                 }
                 // User responded with a goal url
                 else if (lodash.has(entities, 'url')) {
-                    newContext.goalLink = entities.url;
-                }
-                break;
-                // Story: accountInformation
-            case "accountInformation":
-                // Initialized Story
-                if (lodash.isEmpty(pastContext)) {
-                    newContext.intent = "accountInformation";
+                    newContext.goalUrl = entities.url;
                 }
                 break;
         }
-
-        console.log("Entities :" + JSON.stringify(entities));
-        console.log("New Context :" + JSON.stringify(newContext));
+        
         // Merge contexts and store that new merged context!
         mergedContext = lodash.assign({}, pastContext, newContext);
-        lodash.set(sessionStorage, sessionId, mergedContext);
         resolve(mergedContext);
     });
 }
 
 
 function aiResponse(userId, message) {  
-    var pastContext = lodash.get(sessionStorage, userId, {});
-
+    
     return new Promise((resolve, reject) => {
-        var witAi = new Wit(process.env.WITAI_SERVER_TOKEN, {
-            say: (sessionId, context, message, cb) => {
-                cb();
-                resolve(message);
-            },
-            merge: (sessionId, context, entities, message, cb) => {
-                _createContextFromEntities(sessionId, 
-                                           context, 
-                                           entities, 
-                                           message).then(cb);
-            },
-            error: (sessionId, context, err) => {
-                console.log("Wit Error: " + err.message + 
-                            ", For session: " + sessionId);
-                reject(err);
-            }
-        });
+        
+        var botMessage, 
+            
+            pastContext = lodash.get(sessionStorage, userId, {}), 
+            witAi = new Wit(process.env.WITAI_SERVER_TOKEN, {
+                say: (sessionId, context, message, cb) => {
+                    botMessage = message;
+                    cb();
+                },
+                merge: (sessionId, context, entities, message, cb) => {
+                    _createContextFromEntities(sessionId, 
+                                               context, 
+                                               entities, 
+                                               message).then(cb);
+                },
+                error: (sessionId, context, err) => {
+                    console.log("Wit Error: " + err.message + 
+                                ", For session: " + sessionId);
+                    reject(err);
+                }
+            });
+        
         witAi.runActions(userId, 
                          message, 
                          pastContext, 
@@ -93,17 +88,10 @@ function aiResponse(userId, message) {
                 console.log("Wit Error: " + error);
             } else {
                 sessionStorage[userId] = newContext;
+                resolve();
             }
         });
     });
 }
 
 module.exports = exports = aiResponse;
-
-(require('node-env-file'))(__dirname + "/../../.env");
-aiResponse(12, "Create a goal for me!").then(function (aiMessage) { 
-    console.log(aiMessage);
-    return aiResponse(12, "Big blue");
-}).then(function (aiMessage) { 
-    console.log(aiMessage);
-});
