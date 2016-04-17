@@ -3,11 +3,11 @@ var visa    = require('../utils/visa'),
 
 module.exports = {
     connect_card(req, res){
-        visa('vctc/customerrules/v1/consumertransactioncontrols', 
+        visa('vctc/customerrules/v1/consumertransactioncontrols',
             {'primaryAccountNumber': '4667596775551010'},
-            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ", 
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"})
-        .then(function (stuff) { console.log(stuff); res.json(stuff); }, 
+        .then(function (stuff) { console.log(stuff); res.json(stuff); },
             function (error) { console.log(error); });
     },
     connect_bank(req, res){
@@ -17,8 +17,8 @@ module.exports = {
     },
     validate(req, res){
         plaid.createUser(
-            req.body.token || req.query.token, 
-            req.body.key || req.query.key, 
+            req.body.token || req.query.token,
+            req.body.key || req.query.key,
             null,
             (err, data) => {
               res.json( err || data);
@@ -38,7 +38,7 @@ module.exports = {
         plaid.risks((err, data) => {
             res.json(err || data);
         });
-    }
+    },
     test(req, res){
         plaid.render(img => {
             res.json({img});

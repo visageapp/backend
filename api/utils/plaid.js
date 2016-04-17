@@ -2,7 +2,7 @@ var request = require('request'),
     webshot = require('webshot'),
     plaid   = require('plaid'),
     chase   = "5301a99504977c52b60000d0", //chase bank instution code
-    P       = new plaid.Client(process.env.PLAID_CLIENTID, process.env.PLAID_SECRET, plaid.environments.tartan);
+    P       = new plaid.Client('571283b266710877408cff7f', 'ed8be9bcb8ff937843385919c6341a', plaid.environments.tartan);
 
 var token = '42092ed7e3614dfcaa4c42d8f7142acb7d2f27f2e9fea1180a165629f1f426808fa1054a6621fa2a041cdd844569b3d4f404d68a1b42373ed67537f4f053f799d3d6037ae7841b1383b85b9d565a4bdf';
 
@@ -51,7 +51,7 @@ module.exports = {
   },
   getIncome(cb){
     P.getConnectUser(token, (err, data) => {
-      cb(err, 
+      cb(err,
         data.transactions
           .map(t => {
             return {
@@ -68,8 +68,8 @@ module.exports = {
     P.getRiskUser(token, cb)
   },
   render(cb){
-    webshot(`<html><body><h1>Total: 841.52</h1></body></html>`, 
-        './tmp/hello_world.png', 
+    webshot(`<html><body><h1>Total: 841.52</h1></body></html>`,
+        './tmp/hello_world.png',
         {siteType:'html'}, err => {
             cb(`.tmp/hello_world.png`);
         });
