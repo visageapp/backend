@@ -46,19 +46,19 @@ function _createContextFromEntities(sessionId, context,
                 newContext.goalUrl = entities.url;
             }
         }
-        else if (intent === "accountInformation") {
+        if (intent === "accountInformation") {
             newContext.reply = "account";
         }
-        else if (intent === "showMyCards") {
+        if (intent === "showMyCards") {
             newContext.reply = "show_cards";
         }
-        else if (intent === "limit") {
+        if (intent === "limit") {
             if (lodash.has(entities, 'amount_of_money')) {
                 newContext.limitAmount = 
                     lodash.get(entities, 'amount_of_money.0.value');
             }
         }
-        else if (intent === "greeting") {
+        if (intent === "greeting") {
             newContext.reply = 
                 "Welcome to Visage, your personal AI financial " + 
                 "assistant!";
