@@ -32,6 +32,7 @@ app.use((req, res, next) => {
 		next();
 	}
 });
+app.use(express.static(__dirname + './static'));
 
 app.get("/api/v" + process.env.VERSION_NUMBER + "/startDb", (req, res) => {
     User.seed();
