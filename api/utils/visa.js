@@ -4,11 +4,13 @@ var request = require('request'),
 
 /**
 * Helper util for calling the Visa API.
+* @param {String} apiPath - Path to API visa
 * @param {Object|?} payload - Payload to send to Visa API
-* @param {Object} userDetails - {userid, password}
+* @param {String} requestMethod - request method in lower-case string
+* @param {Object|Optional} userDetails - {userid, password}
 * @returns {Promise} Resolve on success, Rejected otherwise
 */
-function visa(apiPath, payload, userDetails) {
+function visa(apiPath, payload, requestMethod, userDetails) {
 
     return fsPromise
         .readFile(`${__dirname}/../../keys/visa_private.pem`)
@@ -24,7 +26,7 @@ function visa(apiPath, payload, userDetails) {
         })
         .then((contents) => {
             function promiseExecutor(resolve, reject) {
-                var userId, userPass, 
+                var userId, userPass, requestObj, 
                     privateContents = contents.privateContents,
                     certificateContents = contents.certificateContents;
                 
@@ -40,8 +42,13 @@ function visa(apiPath, payload, userDetails) {
                     userId = userDetails.userid;
                     userPass = userDetails.password;
                 }
-
-                request.post({
+                
+                if (requestMethod) {
+                    requestObj = request[requestMethod];
+                } else {
+                    requestObj = request.post;
+                }
+                requestObj({
                     url : `https://sandbox.api.visa.com/${apiPath}`,
                     key: privateContents,
                     cert: certificateContents,
@@ -81,4 +88,57 @@ function visa(apiPath, payload, userDetails) {
         });
 }
 
-module.exports = exports = visa;
+var playload = {
+    "globalControl": {
+        "alertThreshold": 500, //value
+        "declineThreshold": 600, //value
+        "isControlEnabled": true,
+        "shouldAlertOnDecline": true,
+        "shouldDeclineAll": true,
+        "shouldTargetSpecificCard": true,
+        "userIdentifier": "string"
+      },
+      "transactionControls": [
+        {
+          "alertThreshold": 150, //value
+          "controlType": "TCT_AUTO_PAY",
+          "declineThreshold": 400, //value
+          "isControlEnabled": true,
+          "shouldAlertOnDecline": true,
+          "shouldDeclineAll": true,
+          "shouldTargetSpecificCard": true,
+          "userIdentifier": "string"
+        }
+      ]
+};
+
+module.exports = exports = {
+    connect(){
+        return visa('vctc/customerrules/v1/consumertransactioncontrols',
+            {'primaryAccountNumber': '4667596775551010'},
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"});
+    },
+    get(card){
+        return visa('paai/generalattinq/v1/cardattributes/generalinquiry',
+            {'primaryAccountNumber': '4667596775551010'},
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"});
+    },
+    secure(){
+        return visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
+            payload,
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+    },
+    restrict(){
+        // modify payload
+        // payload
+
+        return visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
+            payload,
+            'put',
+            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
+            password: "lMkAbcAMAbEFfNhkNO3ZM"})
+    }
+};
