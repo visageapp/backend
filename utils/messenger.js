@@ -1,4 +1,5 @@
 var request = require('request');
+var User = require('../api/models/')
 
 function sendTextMessage(sender, text) {
     messageData = {
@@ -26,6 +27,12 @@ function messenger(req, res) {
     for (var i = 0; i < messaging_events.length; i++) {
         var event = req.body.entry[0].messaging[i];
         var sender = event.sender.id;
+
+        User.findByMessenger(sender, function(){
+
+        });
+
+
         if (event.message && event.message.text) {
             var text = event.message.text;
             sendTextMessage(sender, "No, "+ text.substring(0, 200));
