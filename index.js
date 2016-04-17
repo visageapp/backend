@@ -3,7 +3,7 @@ var express = require('express'),
     nodeEnvFile = require('node-env-file'),
     fbHookVerify = require('./api/controllers/fbHookVerify'),
     fbHookMessage = require('./api/controllers/fbHookMessage'),
-    User = require('./api/models/User');
+    User = require('./api/models/User'),
     app = express();
 
 // Load Environment Variables
@@ -36,7 +36,7 @@ app.use(express.static(__dirname + './static'));
 
 app.get("/api/v" + process.env.VERSION_NUMBER + "/startDb", (req, res) => {
     User.seed();
-    res.json({msg: "Done son"})
+    res.json({msg: "Done son"});
 });
 
 // Routes
