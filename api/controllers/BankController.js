@@ -18,15 +18,30 @@ module.exports = {
         .then(resp => res.json(resp.body), err => res.json(err));
     },
     secure_card(req, res){
-        visa('',
-            {'primaryAccountNumber': '4667596775551010'},
-            {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
-            password: "lMkAbcAMAbEFfNhkNO3ZM"})
-        .then(resp => res.json(resp.body), err => res.json(err));
-    },
-    restrict_card(req, res){
-        visa('',
-            {'primaryAccountNumber': '4667596775551010'},
+        visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
+            {
+                "globalControl": {
+                    "alertThreshold": 500, //value
+                    "declineThreshold": 600, //value
+                    "isControlEnabled": true,
+                    "shouldAlertOnDecline": true,
+                    "shouldDeclineAll": true,
+                    "shouldTargetSpecificCard": true,
+                    "userIdentifier": "string"
+                  },
+                  "transactionControls": [
+                    {
+                      "alertThreshold": 150, //value
+                      "controlType": "TCT_AUTO_PAY",
+                      "declineThreshold": 400, //value
+                      "isControlEnabled": true,
+                      "shouldAlertOnDecline": true,
+                      "shouldDeclineAll": true,
+                      "shouldTargetSpecificCard": true,
+                      "userIdentifier": "string"
+                    }
+                  ]
+            },
             {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"})
         .then(resp => res.json(resp.body), err => res.json(err));
@@ -61,8 +76,28 @@ module.exports = {
         });
     },
     test(req, res){
-        visa('paai/generalattinq/v1/cardattributes/generalinquiry',
-            {'primaryAccountNumber': '4667596775551010'},
+        visa(`vctc/customerrules/v1/consumertransactioncontrols/${card}/rules`,
+            {
+                "globalControl": {
+                    "alertThreshold": 500,
+                    "declineThreshold": 500,
+                    "isControlEnabled": true,
+                    "shouldAlertOnDecline": true,
+                    "shouldDeclineAll": false,
+                    "shouldTargetSpecificCard": true,
+                  },
+                  "transactionControls": [
+                    {
+                      "alertThreshold": 150,
+                      "controlType": "TCT_AUTO_PAY",
+                      "declineThreshold": 400,
+                      "isControlEnabled": true,
+                      "shouldAlertOnDecline": true,
+                      "shouldDeclineAll": false,
+                      "shouldTargetSpecificCard": true,
+                    }
+                  ]
+            },
             {userid: "21V9YG3XNSWPKKZCIUNY21ON3uFeCZC0hGuchwo4KxwLjoAFQ",
             password: "lMkAbcAMAbEFfNhkNO3ZM"})
         .then(resp => res.json(resp.body), err => res.json(err));
